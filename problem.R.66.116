@@ -1,0 +1,40 @@
+# 30 rows
+N <- 30;
+
+# Target/response variable
+Y <- as.integer(rnorm(N) > 0);
+
+# Continuous feature
+x1 <- rnorm(N);
+# Categorical feature (factor)
+x2 <- c(
+    rep("A", 10),
+    rep("B", 10),
+    rep("C", 10)
+    );
+
+# Put everything together in a data.frame
+dfr <- cbind(as.data.frame(cbind(Y, x1)), x2);
+
+# Do logistic regression using data frame and formula
+use.formula <- function(dfr) {
+    fit <- glm(formula(Y~x1+x2), dfr, family=binomial(link="logit"));
+    summary(fit);
+}
+
+# Try to do logistic regression by using matrices, but this won't work.
+use.matrix <- function(dfr, ycol, xcols) {
+    Y <- as.matrix(dfr[,ycol]);
+    X <- as.matrix(dfr[,xcols]);
+    fit <- glm(Y~X, family=binomial(link="logit"));
+    summary(fit);
+}
+
+cat("Using formula...\n");
+sfit <- use.formula(dfr);
+print(sfit);
+
+cat("\n\nUsing matrix, this should cause an error...\n");
+sfit <- use.matrix(dfr, "Y", c("x1", "x2"));
+print(sfit);
+
